@@ -1,21 +1,22 @@
 namespace VerticalSliceArchitectureTemplate.Features.BookFeature.GetAllBooks;
 
+using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
-using VerticalSliceArchitectureTemplate.Entities;
-using VerticalSliceArchitectureTemplate.Repository;
+using VerticalSliceArchitectureTemplate.Database;
 
 public sealed record GetAllBooksRequest;
-public sealed record GetAllBooksResponse(IEnumerable<BookDto> Books);
-public sealed record BookDto(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);
+public sealed record GetAllBooksResponse(IReadOnlyList<BookSummary> Books);
+public sealed record BookSummary(Guid Id, string Title, string Author, decimal Price, int PublishedYear);
 
-public sealed class GetAllBooksHandler(
-    IRepository<Book> _bookRepo) : IHandler<GetAllBooksRequest, Result<GetAllBooksResponse>>
+public sealed class GetAllBooksHandler(ApplicationDbContext db) : IHandler<GetAllBooksRequest, Result<GetAllBooksResponse>>
 {
     public async Task<Result<GetAllBooksResponse>> HandleAsync(GetAllBooksRequest command, CancellationToken cancellationToken)
     {
-        var books = await _bookRepo.GetAllAsync(cancellationToken);
-        var bookDtos = books.Select(b => new BookDto(b.Id, b.Title, b.Author, b.ISBN, b.Price, b.PublishedYear)).ToList();
-        
-        return Result.Success(new GetAllBooksResponse(bookDtos));
+        var books = await db.Books
+            .AsNoTracking()
+            .Select(b => new BookSummary(b.Id, b.Title, b.Author, b.Price, b.PublishedYear))
+            .ToListAsync(cancellationToken);
+
+        return Result.Success(new GetAllBooksResponse(books));
     }
 }

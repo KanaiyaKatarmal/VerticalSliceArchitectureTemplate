@@ -1,15 +1,15 @@
-﻿namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
 
+using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
-using VerticalSliceArchitectureTemplate.Entities;
-using VerticalSliceArchitectureTemplate.Repository;
+using VerticalSliceArchitectureTemplate.Database;
 
 public sealed record CreateBookRequest(string Title, string Author, string ISBN, decimal Price, int PublishedYear);
 public sealed record CreateBookResponse(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);
 
 public sealed class CreateBookHandler(
-    IRepository<Book> _callLogRepo,
-    IUnitOfWork _unitOfWork) : IHandler<CreateBookRequest, Result<CreateBookResponse>>
+    ApplicationDbContext db,
+    IEventDispatcher events) : IHandler<CreateBookRequest, Result<CreateBookResponse>>
 {
     public async Task<Result<CreateBookResponse>> HandleAsync(CreateBookRequest command, CancellationToken cancellationToken)
     {
@@ -23,8 +23,10 @@ public sealed class CreateBookHandler(
             PublishedYear = command.PublishedYear
         };
 
-        await _callLogRepo.AddAsync(book, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        db.Books.Add(book);
+        await db.SaveChangesAsync(cancellationToken);
+
+        await events.DispatchAsync(new BookCreatedEvent(book.Id, book.Title, book.Author), cancellationToken);
 
         return Result.Success(new CreateBookResponse(book.Id, book.Title, book.Author, book.ISBN, book.Price, book.PublishedYear));
     }

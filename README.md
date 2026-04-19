@@ -20,10 +20,14 @@ A modern .NET 10 REST API template implementing **Vertical Slice Architecture** 
 VerticalSliceArchitectureTemplate/
 ├── Abstractions/                      # Core interfaces and abstractions
 │   ├── IApiEndpoint.cs               # Endpoint contract
-│   ├── IHandler.cs                   # Handler contract
+│   ├── IDomainEvent.cs               # Marker interface for domain events
+│   ├── IEventDispatcher.cs           # Dispatcher contract for domain events
+│   ├── IEventHandler.cs              # Typed domain event handler contract
+│   ├── IHandler.cs                   # Request handler contract
 │   ├── Result.cs                     # Success/Failure result wrapper
 │   └── Errors/
-│       └── Error.cs                  # Error type definition
+│       ├── Error.cs                  # Error type definition
+│       └── ValidationError.cs        # Validation error aggregate
 │
 ├── Constants/                        # Shared constants
 │   └── ApiTags.cs                   # OpenAPI tags
@@ -31,47 +35,39 @@ VerticalSliceArchitectureTemplate/
 ├── Database/
 │   └── ApplicationDbContext.cs       # EF Core DbContext
 │
-├── Entities/
-│   └── Book.cs                       # Domain entity
+├── Exceptions/
+│   └── CustomExceptionHandler.cs     # Global exception handler
 │
 ├── Extensions/                       # DI & configuration extensions
 │   ├── DatabaseExtensions.cs
+│   ├── EventDispatcher.cs
 │   ├── HandlerRegistrationExtensions.cs
 │   ├── HealthChecksExtensions.cs
 │   ├── MapEndpointExtensions.cs
 │   └── ResultExtensions.cs
 │
 ├── Features/                         # Vertical slices (features)
-│   └── BookFeature/
+│   └── Book/
+│       ├── Book.cs                  # Domain entity co-located with feature
 │       ├── BookErrors.cs            # Feature-specific errors
 │       ├── CreateBook/
-│       │   ├── CreateBookRequest.cs (record)
-│       │   ├── CreateBookResponse.cs (record)
+│       │   ├── BookCreatedEvent.cs   # Domain event raised after a book is created
+│       │   ├── BookCreatedEventHandler.cs # Handles post-create behavior
 │       │   ├── CreateBookHandler.cs
 │       │   ├── CreateBookValidator.cs
 │       │   └── CreateBookEndpoint.cs
 │       ├── GetAllBooks/
-│       │   ├── GetAllBooksRequest.cs (record)
-│       │   ├── GetAllBooksResponse.cs (record)
-│       │   ├── BookDto.cs (record)
 │       │   ├── GetAllBooksHandler.cs
-│       │   ├── GetAllBooksValidator.cs
 │       │   └── GetAllBooksEndpoint.cs
 │       ├── GetBookById/
-│       │   ├── GetBookByIdRequest.cs (record)
-│       │   ├── GetBookByIdResponse.cs (record)
 │       │   ├── GetBookByIdHandler.cs
 │       │   ├── GetBookByIdValidator.cs
 │       │   └── GetBookByIdEndpoint.cs
 │       ├── UpdateBook/
-│       │   ├── UpdateBookRequest.cs (record)
-│       │   ├── UpdateBookResponse.cs (record)
 │       │   ├── UpdateBookHandler.cs
 │       │   ├── UpdateBookValidator.cs
 │       │   └── UpdateBookEndpoint.cs
 │       └── DeleteBook/
-│           ├── DeleteBookRequest.cs (record)
-│           ├── DeleteBookResponse.cs (record)
 │           ├── DeleteBookHandler.cs
 │           ├── DeleteBookValidator.cs
 │           └── DeleteBookEndpoint.cs
@@ -79,12 +75,6 @@ VerticalSliceArchitectureTemplate/
 ├── Pipelines/                        # Request processing decorators
 │   ├── ValidationDecorator.cs       # FluentValidation pipeline
 │   └── LoggingDecorator.cs          # Logging pipeline
-│
-├── Repository/                       # Data access layer
-│   ├── IRepository.cs
-│   ├── IUnitOfWork.cs
-│   ├── Repository.cs
-│   └── UnitOfWork.cs
 │
 ├── appsettings.json                 # Configuration
 ├── appsettings.Development.json
@@ -105,14 +95,23 @@ Each feature is self-contained with its own request/response DTOs, handler, vali
 - **Queries** - Operations that read data (GetAll, GetById)
 - **Handlers** - `IHandler<TRequest, TResponse>` processes each request
 
-### 3. Request/Response as Records
+### 3. Domain Events
+Domain events let a feature publish a fact that happened inside the domain without coupling the command handler to the follow-up work.
+- **`IDomainEvent`** marks an event type as a domain event.
+- **`IEventHandler<TEvent>`** handles one specific event type.
+- **`IEventDispatcher`** resolves all handlers for an event and invokes them.
+- **`DispatchAsync`** is the entry point used by handlers to publish events after the main write completes.
+
+In the Book feature, `CreateBookHandler` saves the book, then dispatches `BookCreatedEvent`. `BookCreatedEventHandler` handles that event and logs the creation.
+
+### 4. Request/Response as Records
 All DTOs use C# records for immutability and cleaner syntax:
 ```csharp
 public sealed record CreateBookRequest(string Title, string Author, string ISBN, decimal Price, int PublishedYear);
 public sealed record CreateBookResponse(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);
 ```
 
-### 4. Validation Pipeline
+### 5. Validation Pipeline
 FluentValidation decorators automatically validate requests before handlers:
 ```csharp
 RuleFor(c => c.Title)
@@ -120,7 +119,7 @@ RuleFor(c => c.Title)
     .MaximumLength(200).WithMessage("Title must not exceed 200 characters");
 ```
 
-### 5. Pipeline Logging
+### 6. Pipeline Logging
 Decorators log request/response and execution time:
 ```csharp
 LoggingDecorator     → Logs request, response, duration
@@ -128,7 +127,7 @@ ValidationDecorator  → Validates request
 Handler              → Processes actual business logic
 ```
 
-### 6. Error Handling
+### 7. Error Handling
 Centralized error handling with `Result<T>` wrapper:
 ```csharp
 // Success
@@ -287,6 +286,17 @@ Response 200:
   "publishedYear": 2008
 }
 ```
+
+### Book Create Flow
+
+The create-book slice publishes a domain event after persistence:
+
+1. `CreateBookHandler` creates the `Book` entity and saves it with EF Core.
+2. The handler calls `IEventDispatcher.DispatchAsync(new BookCreatedEvent(...))`.
+3. `EventDispatcher` resolves every `IEventHandler<BookCreatedEvent>` from DI.
+4. `BookCreatedEventHandler` runs and logs the new book.
+
+This keeps the command focused on the write model while still allowing feature-specific follow-up work.
 
 ---
 
@@ -704,9 +714,9 @@ Endpoint Result Mapping (Map to HTTP response)
 
 ## Adding a New Feature
 
-1. **Create Feature Folder** under `Features/BookFeature/`:
+1. **Create Feature Folder** under `Features/Book/`:
    ```
-   Features/BookFeature/NewFeature/
+   Features/Book/NewFeature/
    ├── NewFeatureRequest.cs (record)
    ├── NewFeatureResponse.cs (record)
    ├── NewFeatureHandler.cs
@@ -732,6 +742,19 @@ Endpoint Result Mapping (Map to HTTP response)
        app.MapPost("path", async (...) => { ... })
            .WithTags(ApiTags.Books)
            .Produces<NewFeatureResponse>(StatusCodes.Status200OK);
+   }
+   ```
+
+5. **Optional: Publish a Domain Event** when the feature needs post-write behavior:
+   ```csharp
+   public sealed record NewFeatureCreatedEvent(Guid Id) : IDomainEvent;
+
+   public sealed class NewFeatureCreatedEventHandler : IEventHandler<NewFeatureCreatedEvent>
+   {
+     public Task HandleAsync(NewFeatureCreatedEvent @event, CancellationToken cancellationToken)
+     {
+       return Task.CompletedTask;
+     }
    }
    ```
 

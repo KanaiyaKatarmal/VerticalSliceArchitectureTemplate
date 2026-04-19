@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VerticalSliceArchitectureTemplate.Entities;
+using VerticalSliceArchitectureTemplate.Features.BookFeature;
 namespace VerticalSliceArchitectureTemplate.Database;
 
 public class ApplicationDbContext(DbContextOptions options)

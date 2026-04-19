@@ -1,7 +1,4 @@
-﻿using Azure.Core;
-
-
-namespace VerticalSliceArchitectureTemplate.Abstractions
+﻿namespace VerticalSliceArchitectureTemplate.Abstractions
 {
     public interface IHandler<in TRequest, TResponse>
     {

@@ -1,7 +1,7 @@
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Constants;
 using VerticalSliceArchitectureTemplate.Extensions;
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.GetBookById;
+namespace VerticalSliceArchitectureTemplate.Features.Book.GetBookById;
 
 internal sealed class GetBookByIdEndpoint : IApiEndpoint
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 public class CreateBookValidator : AbstractValidator<CreateBookRequest>
 {

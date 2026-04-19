@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using VerticalSliceArchitectureTemplate.Abstractions;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 public sealed class BookCreatedEventHandler(ILogger<BookCreatedEventHandler> logger) : IEventHandler<BookCreatedEvent>
 {

@@ -3,7 +3,7 @@ using Scalar.AspNetCore;
 using System.Reflection;
 using VerticalSliceArchitectureTemplate.Exceptions;
 using VerticalSliceArchitectureTemplate.Extensions;
-using VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+using VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.GetBookById;
+namespace VerticalSliceArchitectureTemplate.Features.Book.GetBookById;
 
 public class GetBookByIdValidator : AbstractValidator<GetBookByIdRequest>
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.DeleteBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.DeleteBook;
 
 public class DeleteBookValidator : AbstractValidator<DeleteBookRequest>
 {

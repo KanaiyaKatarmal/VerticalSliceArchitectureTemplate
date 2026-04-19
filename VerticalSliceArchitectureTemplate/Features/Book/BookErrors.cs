@@ -1,5 +1,5 @@
 ﻿using VerticalSliceArchitectureTemplate.Abstractions.Errors;
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature;
+namespace VerticalSliceArchitectureTemplate.Features.Book;
 
 public static class BookErrors
 {

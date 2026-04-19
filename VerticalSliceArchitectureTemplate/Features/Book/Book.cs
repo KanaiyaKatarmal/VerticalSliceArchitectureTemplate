@@ -1,4 +1,4 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature;
+namespace VerticalSliceArchitectureTemplate.Features.Book;
 
 public sealed class Book
 {

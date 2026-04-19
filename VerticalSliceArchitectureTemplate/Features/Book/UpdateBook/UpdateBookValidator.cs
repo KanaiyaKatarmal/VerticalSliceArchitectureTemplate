@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.UpdateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.UpdateBook;
 
 public class UpdateBookValidator : AbstractValidator<UpdateBookRequest>
 {

@@ -1,9 +1,9 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.GetBookById;
+namespace VerticalSliceArchitectureTemplate.Features.Book.GetBookById;
 
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Database;
-using VerticalSliceArchitectureTemplate.Features.BookFeature;
+using VerticalSliceArchitectureTemplate.Features.Book;
 
 public sealed record GetBookByIdRequest(Guid Id);
 public sealed record GetBookByIdResponse(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);

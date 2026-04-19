@@ -1,7 +1,7 @@
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Constants;
 using VerticalSliceArchitectureTemplate.Extensions;
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.DeleteBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.DeleteBook;
 
 internal sealed class DeleteBookEndpoint : IApiEndpoint
 {

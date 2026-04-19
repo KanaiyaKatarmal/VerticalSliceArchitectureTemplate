@@ -1,7 +1,7 @@
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Constants;
 using VerticalSliceArchitectureTemplate.Extensions;
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 internal sealed class CreateBookEndpoint : IApiEndpoint
 {

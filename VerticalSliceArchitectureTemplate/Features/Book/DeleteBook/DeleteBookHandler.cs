@@ -1,9 +1,9 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.DeleteBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.DeleteBook;
 
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Database;
-using VerticalSliceArchitectureTemplate.Features.BookFeature;
+using VerticalSliceArchitectureTemplate.Features.Book;
 
 public sealed record DeleteBookRequest(Guid Id);
 public sealed record DeleteBookResponse(Guid Id);

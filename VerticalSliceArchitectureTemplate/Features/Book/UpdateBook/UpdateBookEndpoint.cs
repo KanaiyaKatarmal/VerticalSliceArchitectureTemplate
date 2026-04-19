@@ -1,7 +1,7 @@
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Constants;
 using VerticalSliceArchitectureTemplate.Extensions;
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.UpdateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.UpdateBook;
 
 internal sealed class UpdateBookEndpoint : IApiEndpoint
 {

@@ -1,5 +1,5 @@
 using VerticalSliceArchitectureTemplate.Abstractions;
 
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 public sealed record BookCreatedEvent(Guid BookId, string Title, string Author) : IDomainEvent;

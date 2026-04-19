@@ -1,4 +1,4 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.GetAllBooks;
+namespace VerticalSliceArchitectureTemplate.Features.Book.GetAllBooks;
 
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;

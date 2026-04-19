@@ -1,9 +1,9 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.UpdateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.UpdateBook;
 
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Database;
-using VerticalSliceArchitectureTemplate.Features.BookFeature;
+using VerticalSliceArchitectureTemplate.Features.Book;
 
 public sealed record UpdateBookRequest(Guid Id, string? Title, string? Author, string? ISBN, decimal? Price, int? PublishedYear);
 public sealed record UpdateBookResponse(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);

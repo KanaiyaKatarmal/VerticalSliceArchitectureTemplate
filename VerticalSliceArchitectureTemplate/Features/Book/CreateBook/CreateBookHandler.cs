@@ -1,8 +1,10 @@
-namespace VerticalSliceArchitectureTemplate.Features.BookFeature.CreateBook;
+namespace VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitectureTemplate.Abstractions;
 using VerticalSliceArchitectureTemplate.Database;
+using VerticalSliceArchitectureTemplate.Features.Book;
+using VerticalSliceArchitectureTemplate.Features.Book.CreateBook;
 
 public sealed record CreateBookRequest(string Title, string Author, string ISBN, decimal Price, int PublishedYear);
 public sealed record CreateBookResponse(Guid Id, string Title, string Author, string ISBN, decimal Price, int PublishedYear);
